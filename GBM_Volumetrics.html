@@ -11791,8 +11791,8 @@ div#notebook {
 <li>Smooth image using an edge-preserving filter (Curvature flow) for denoising</li>
 <li>Apply tumor mask obtained from label file</li>
 <li>On masked image, compute automated threshold to separate CE and NE regions</li>
-<li>generate label image with background label 0, NE label 1, and CE label 2</li>
-<li>write out image file</li>
+<li>Generate label image with background label 0, NE label 1, and CE label 2</li>
+<li>Write out image file</li>
 </ul>
 </li>
 <li>Computes volumes of these regions<ul>
@@ -11801,7 +11801,7 @@ div#notebook {
 </li>
 </ul>
 <h3 id="Programming-details">Programming details<a class="anchor-link" href="#Programming-details">&#182;</a></h3><ul>
-<li>Simple ITK is an image analysis toolkit that is built on top of ITK. I'm using the Python distribution for the code below [2,3].</li>
+<li>Simple ITK is an open-source image analysis toolkit that is built on top of ITK. I'm using the Python distribution for the code below [2,3].</li>
 </ul>
 
 </div>
@@ -11809,14 +11809,12 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">IMAGEJ_PATH</span> <span class="o">=</span> <span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">Program Files</span><span class="se">\\</span><span class="s1">ImageJ&#39;</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IMAGEJ_PATH</span> <span class="o">+</span> <span class="s1">&#39;;&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -11826,7 +11824,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># read the images</span>
@@ -11845,7 +11843,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sitk</span><span class="o">.</span><span class="n">Show</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Original image&#39;</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Show image in ImageJ</span>
+<span class="n">IMAGEJ_PATH</span> <span class="o">=</span> <span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">Program Files</span><span class="se">\\</span><span class="s1">ImageJ&#39;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IMAGEJ_PATH</span> <span class="o">+</span> <span class="s1">&#39;;&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span>
+<span class="n">sitk</span><span class="o">.</span><span class="n">Show</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Original image&#39;</span><span class="p">)</span> 
 </pre></div>
 
 </div>
@@ -11857,6 +11858,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>This opens the image in ImageJ enabling interacting with the image</p>
 <h3 id="ImageJ-Screenshot">ImageJ Screenshot<a class="anchor-link" href="#ImageJ-Screenshot">&#182;</a></h3><p><img src="ImageJScreenshot.png" alt="Drawing"  style="width: 200px;"/></p>
 
 </div>
@@ -11864,10 +11866,10 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># function to show 3D SimpleITK image using matplotlib</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># function to show image using matplotlib</span>
 <span class="k">def</span> <span class="nf">myshow</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
     <span class="n">nda</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayViewFromImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
     <span class="n">spacing</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">GetSpacing</span><span class="p">()</span>
@@ -11919,10 +11921,10 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># apply anisotropic smoothing to denoise</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># apply edge-preserving smoothing to denoise</span>
 <span class="n">blurFilter</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">CurvatureFlowImageFilter</span><span class="p">()</span>
 <span class="n">blurFilter</span><span class="o">.</span><span class="n">SetNumberOfIterations</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">blurFilter</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="mf">0.08</span><span class="p">)</span>
@@ -12800,7 +12802,7 @@ RK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># apply mask</span>
@@ -13004,7 +13006,7 @@ SkSC9v8BDNWShOdNB0wAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Find threshold that separates high intensity CE and low intensity NE regions</span>
@@ -13040,7 +13042,7 @@ SkSC9v8BDNWShOdNB0wAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># segmented now has the label 1 for NE as well as background, and 2 for CE regions</span>
@@ -14330,7 +14332,7 @@ ElWaEkglSpSo0pRAKlGiRJWmBFKJEiWqNP0fxQpLqj4sjo8AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># compute volumes and display as table</span>
@@ -14348,7 +14350,7 @@ ElWaEkglSpSo0pRAKlGiRJWmBFKJEiWqNP0fxQpLqj4sjo8AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
@@ -14428,7 +14430,7 @@ ElWaEkglSpSo0pRAKlGiRJWmBFKJEiWqNP0fxQpLqj4sjo8AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Write out segmentations as new labelfile</span>
