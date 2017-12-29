@@ -11775,7 +11775,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Automated-Glioblastoma-Tumor-Segmentation">Automated Glioblastoma Tumor Segmentation<a class="anchor-link" href="#Automated-Glioblastoma-Tumor-Segmentation">&#182;</a></h1><p>MRI T1 and FLAIR images enable visualization of tumor segmentation. The code below utilizes the provided FLAIR and T1 image to perform automated tumor segmentation and generate the following label files:</p>
+<h1 id="Automated-Glioblastoma-Tumor-Segmentation">Automated Glioblastoma Tumor Segmentation<a class="anchor-link" href="#Automated-Glioblastoma-Tumor-Segmentation">&#182;</a></h1><p>MRI T1 and FLAIR images enable visualization of tumor characteristics. The code below utilizes the provided FLAIR and T1 images of one subject to perform automated tumor segmentation and generate the following label files:</p>
 <ul>
 <li>Total tumor (from FLAIR image). </li>
 <li>Tumor bulk (from T1), which consists of the contrast enhancing (CE) and necrotic (NE) parts of the tumor.</li>
@@ -11800,11 +11800,12 @@ div#notebook {
 </li>
 <li>Segmentation of tumor bulk from T1<ul>
 <li>Level set segmentation using total tumor mask from FLAIR as initialization</li>
+<li>Refinement using hole-fill and morphological opening</li>
 </ul>
 </li>
 <li>Computation of dice coefficient of overlap</li>
 </ul>
-<p>In [1] a semi-automated method using FSLView was used to obtain the total tumor and tumor bulk segmentation. Fully automated tumor segmentation approaches in the recent past rely on machine learning techniques such as in [2], where voxel-wise classification was performed. Since I was provided one image, I introduced shape and size constraints to segment the tumor.</p>
+<p>In [1] a semi-automated method using FSLView and FSL-FEAT was used to obtain the total tumor and tumor bulk segmentation. Fully automated tumor segmentation approaches in the recent past rely on machine learning techniques such as in [2], where voxel-wise classification was performed. Since I was provided one image, I introduced shape and size constraints to segment the tumor.</p>
 
 </div>
 </div>
@@ -11862,7 +11863,7 @@ div#notebook {
 <li>Metric: Mutual information is used since it is robust to intensity differences in the images. </li>
 <li>Transformation: Rigid transformation (translation and rotation) since the images are of the same subject</li>
 <li>Multiresolution framework (3 levels) for a fast, robust registration. </li>
-<li>Initialization: The registration is initialized by finding the transform that superimposing the centers of the two images using CenteredTransformInitializer from SimpleITK. </li>
+<li>Initialization: The registration is initialized by finding the transform that superimposes the centers of the two images using CenteredTransformInitializer from SimpleITK. </li>
 <li>Optimizer: Gradient descent </li>
 <li>Interpolation: Linear</li>
 </ul>
@@ -14677,12 +14678,12 @@ QmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[66]:</div>
+<div class="prompt input_prompt">In&nbsp;[83]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># write out images</span>
 <span class="n">sitk</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">img_T1brain</span><span class="p">,</span> <span class="s1">&#39;../Results/Tumorsegmentation/3D_WAND_T1_WEIGHTED_skullstripped.nrrd&#39;</span><span class="p">)</span>
-<span class="n">sitk</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">img_FLAIRbrain</span><span class="p">,</span> <span class="s1">&#39;../Results/Tumorsegmentation/AX_FLAIR_skullstripped.img&#39;</span><span class="p">)</span>
+<span class="n">sitk</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">img_FLAIRbrain</span><span class="p">,</span> <span class="s1">&#39;../Results/Tumorsegmentation/AX_FLAIR_skullstripped.nrrd&#39;</span><span class="p">)</span>
 
 <span class="c1"># To visualize the labels image in RGB with needs a image with 0-255 range</span>
 <span class="n">img_T1brain_255</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Cast</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">RescaleIntensity</span><span class="p">(</span><span class="n">img_T1brain</span><span class="p">),</span> <span class="n">sitk</span><span class="o">.</span><span class="n">sitkUInt8</span><span class="p">)</span>
@@ -17478,9 +17479,8 @@ iUjQFFIiEjSFlIgE7f8Dmousvmwn5EsAAAAASUVORK5CYII=
 <h1 id="Level-set-parameters">Level set parameters<a class="anchor-link" href="#Level-set-parameters">&#182;</a></h1><p>To generate a feature image for the level set filter, we compute the Euclidean distance fuction of the binary FLAIR segmentation. The parameters of the level set were chosen as:</p>
 <ul>
 <li>Initialization: The total tumor mask is chosen as the initialization</li>
-<li>Intensity window: The intensity window was chosen by Otsu multiple level thresholds with 3 thresholds (corresponding to CE, NE, and outer edema regions). Lower threshold of level set intensity window was chosen as the CE threshold. Upper threshold was chosen to be 3 times the lower threshold. This will lock the level set at a value greater than the CE threshold.</li>
+<li>Intensity window: The intensity window was chosen by OtsuMultipleThresholdsImageFilter with 3 thresholds (corresponding to CE, NE, and outer edema regions). Lower threshold of level set intensity window was chosen as the CE threshold. Upper threshold was chosen to be 3 times the lower threshold. This will lock the level set at a value greater than the CE threshold.</li>
 <li>Propagation scaling: A positive value corresponds to expansion and negative for  shrinking. Since we are shrinking the total tumor region to the tumor bulk, I use -1 as the scaling factor. </li>
-<li>Curvature scaling: Determines the smoothness of the resulting mask.</li>
 <li>The rest of the parameters were chosen below to give the best results visually. For a larger dataset, a grid search may be performed to obtain the best agreement (coefficient of overlap) with ground truth labels.</li>
 </ul>
 
